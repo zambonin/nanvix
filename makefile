@@ -1,5 +1,5 @@
-# 
-# Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com> 
+#
+# Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com>
 #
 # This file is part of Nanvix.
 #
@@ -60,6 +60,10 @@ export LDFLAGS   = -Wl,-T $(LIBDIR)/link.ld
 # Builds everything.
 all: nanvix documentation
 
+prepare:
+	sudo bash $(TOOLSDIR)/dev/setup-toolchain.sh
+	sudo bash $(TOOLSDIR)/dev/setup-bochs.sh
+
 # Builds Nanvix.
 nanvix:
 	mkdir -p $(BINDIR)
@@ -80,6 +84,10 @@ documentation:
 tools:
 	mkdir -p $(BINDIR)
 	cd $(TOOLSDIR) && $(MAKE) all
+
+# Runs the image under BOCHS.
+run:
+	bash $(TOOLSDIR)/run/run.sh
 
 # Cleans compilation files.
 clean:

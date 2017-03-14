@@ -1,5 +1,5 @@
-# 
-# Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com> 
+#
+# Copyright(C) 2011-2016 Pedro H. Penna <pedrohenriquepenna@gmail.com>
 #
 # This file is part of Nanvix.
 #
@@ -17,6 +17,11 @@
 # along with Nanvix.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# NOTES:
+#   - This script should work in any Arch-based Linux distribution.
+#   - You should run this script with superuser privileges.
+#
+
 # Set working directory.
 export CURDIR=`pwd`
 export WORKDIR=$CURDIR/nanvix-toolchain
@@ -24,11 +29,11 @@ mkdir -p $WORKDIR
 cd $WORKDIR
 
 # Get binutils and GCC.
-wget "http://ftp.gnu.org/gnu/binutils/binutils-2.25.tar.bz2"
-wget "http://ftp.gnu.org/gnu/gcc/gcc-5.3.0/gcc-5.3.0.tar.bz2"
+curl -O "http://ftp.gnu.org/gnu/binutils/binutils-2.25.tar.bz2"
+curl -O "http://ftp.gnu.org/gnu/gcc/gcc-5.3.0/gcc-5.3.0.tar.bz2"
 
 # Get required packages.
-apt-get install g++
+pacman -S gcc
 
 # Export variables.
 export PREFIX=/usr/local/cross
@@ -40,8 +45,8 @@ sh -c "echo 'export PATH=$PATH:$PREFIX/bin' >> /etc/profile.d/var.sh"
 tar -xjvf binutils-2.25.tar.bz2
 cd binutils-2.25/
 ./configure --target=$TARGET --prefix=$PREFIX --disable-nls
-make all
-make install
+make -j$(nproc) all
+make -j$(nproc) install
 
 # Build GCC.
 cd $WORKDIR
@@ -49,8 +54,8 @@ tar -xjvf gcc-5.3.0.tar.bz2
 cd gcc-5.3.0/
 ./contrib/download_prerequisites
 ./configure --target=$TARGET --prefix=$PREFIX --disable-nls --enable-languages=c --without-headers
-make all-gcc
-make install-gcc
+make -j$(nproc) all-gcc
+make -j$(nproc) install-gcc
 
 # Cleans files.
 cd $WORKDIR
