@@ -32,8 +32,8 @@ cd $WORKDIR
 curl -O "http://ftp.gnu.org/gnu/binutils/binutils-2.25.tar.bz2"
 curl -O "http://ftp.gnu.org/gnu/gcc/gcc-5.3.0/gcc-5.3.0.tar.bz2"
 
-# Get required packages.
-pacman -S gcc
+# Also get Doxygen to build the documentation correctly.
+pacman -S doxygen
 
 # Export variables.
 export PREFIX=/usr/local/cross
@@ -56,6 +56,17 @@ cd gcc-5.3.0/
 ./configure --target=$TARGET --prefix=$PREFIX --disable-nls --enable-languages=c --without-headers
 make -j$(nproc) all-gcc
 make -j$(nproc) install-gcc
+
+# Start of makefile rule to clean toolchain files.
+MAKEFILE="${CURDIR}/makefile"
+RULENAME="clean-toolchain"
+if ! grep -lq "$RULENAME" "$MAKEFILE" ; then
+  cat <<EOF >> "$MAKEFILE"
+${RULENAME}:
+	rm /etc/profile.d/var.sh
+	rm -rf ${PREFIX}
+EOF
+fi
 
 # Cleans files.
 cd $WORKDIR

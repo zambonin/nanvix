@@ -25,7 +25,10 @@ BUILDING
 
 		# make prepare
 
-	to build the Nanvix toolchain.
+	to build the Nanvix toolchain. This command will also create the
+	following rule, that can be used to clean the installed toolchain files.
+
+		# make clean-toolchain
 
 	Once you have setup the required tools, you should set the
 	environment variable $TARGET to point to the toolchain's directory.

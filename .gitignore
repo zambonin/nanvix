@@ -1,5 +1,5 @@
-# 
-# Copyright(C) 2011-2014 Pedro H. Penna <pedrohenriquepenna@gmail.com> 
+#
+# Copyright(C) 2011-2014 Pedro H. Penna <pedrohenriquepenna@gmail.com>
 #
 # This file is part of Nanvix.
 #
@@ -23,6 +23,7 @@
 *.img
 *.pdf
 bochsout.txt
+bx_enh_dbg.ini
 bin/*
 bin/sbin/*
 bin/ubin/*

@@ -42,6 +42,14 @@ sed -i '/^\<LIBS\>/ s/$/ -lpthread/' makefile
 make -j$(nproc) all
 make -j$(nproc) install
 
+# End of makefile rule to clean toolchain files.
+MAKEFILE="${CURDIR}/makefile"
+RULENAME="clean-toolchain"
+cat <<EOF >> "$MAKEFILE"
+$(while read l ; do printf "\t%s\n" "${l/$/\$$}" ; done < <(make -n uninstall))
+	sed -i '/${RULENAME}/Q' ${MAKEFILE}
+EOF
+
 # Cleans files.
 cd $WORKDIR
 cd ..

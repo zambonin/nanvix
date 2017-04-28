@@ -22,6 +22,7 @@
 # non-educational version of the system.
 #
 export EDUCATIONAL_KERNEL=1
+include /etc/profile.d/var.sh
 
 # Directories.
 export BINDIR   = $(CURDIR)/bin
