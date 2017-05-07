@@ -25,6 +25,11 @@
 #include <signal.h>
 
 /**
+ * @brief Next pseudo-random number in the sequence.
+ */
+unsigned _next = 1;
+
+/**
  * @brief Schedules a process to execution.
  * 
  * @param proc Process to be scheduled.
@@ -66,6 +71,7 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
+	unsigned tickets = 0; /* Ticket accumulator.  */
 
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
@@ -81,35 +87,31 @@ PUBLIC void yield(void)
 		if (!IS_VALID(p))
 			continue;
 		
+		/* Reuse loop to accumulate tickets. */
+		tickets += PROC_TICKETS(p);
+
 		/* Alarm has expired. */
 		if ((p->alarm) && (p->alarm < ticks))
 			p->alarm = 0, sndsig(p, SIGALRM);
 	}
 
+	/* Generate a pseudo-random integer. */
+	unsigned _rand = rand() % tickets;
+
 	/* Choose a process to run next. */
 	next = IDLE;
-	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	for (p = LAST_PROC; p >= FIRST_PROC; p--)
 	{
 		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
-		
-		/*
-		 * Process with higher
-		 * waiting time found.
-		 */
-		if (p->counter > next->counter)
-		{
-			next->counter++;
+
+		/* Process chosen after accumulating tickets. */
+		if (tickets > _rand)
 			next = p;
-		}
-			
-		/*
-		 * Increment waiting
-		 * time of process.
-		 */
-		else
-			p->counter++;
+
+		/* Decrement counter to find a better suited process. */
+		tickets -= PROC_TICKETS(p);
 	}
 	
 	/* Switch to next process. */
@@ -117,4 +119,25 @@ PUBLIC void yield(void)
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
 	switch_to(next);
+}
+
+/**
+ * @brief Sets seed value for pseudo-random number generator.
+ *
+ * @param seed Pseudo-random number sequence's seed value.
+ */
+void srand(unsigned seed)
+{
+	_next = seed;
+}
+
+/**
+ * @brief Generates a pseudo-random number.
+ *
+ * @returns A pseudo-random integer.
+ */
+int rand(void)
+{
+	_next = (_next * 1103515245) + 12345;
+	return ((_next >> 16) & 0x7fff);
 }

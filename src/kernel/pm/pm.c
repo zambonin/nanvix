@@ -19,6 +19,7 @@
  * along with Nanvix. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <nanvix/clock.h>
 #include <nanvix/config.h>
 #include <nanvix/const.h>
 #include <nanvix/dev.h>
@@ -122,6 +123,9 @@ PUBLIC void pm_init(void)
 	IDLE->chain = NULL;
 	
 	nprocs++;
+
+	/* Seed the RNG for future yielding. */
+	srand(CURRENT_TIME);
 
 	enable_interrupts();
 }

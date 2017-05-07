@@ -267,6 +267,17 @@
 	 */
 	#define IS_SUPERUSER(p) \
 		(((p)->uid == SUPERUSER) || ((p)->euid == SUPERUSER))
+
+	/**
+	 * @brief Calculates the number of tickets for a process.
+	 *
+	 * @param p Process to be queried about.
+	 *
+	 * @returns An integer representing the number of tickets a process
+	 *          shall receive, in accordance to its priority and nice value.
+	 */
+	#define PROC_TICKETS(p) \
+		((8 + (4 - ((p)->nice / 5))) - (((p)->priority + 100) / 20))
 	
 	/* Forward definitions. */	
 	EXTERN void resume(struct process *);
