@@ -71,7 +71,7 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
-	unsigned tickets = 0; /* Ticket accumulator.  */
+	unsigned t = ttickts; /* Ticket accumulator.  */
 
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
@@ -86,9 +86,6 @@ PUBLIC void yield(void)
 		/* Skip invalid processes. */
 		if (!IS_VALID(p))
 			continue;
-		
-		/* Reuse loop to accumulate tickets. */
-		tickets += PROC_TICKETS(p);
 
 		/* Alarm has expired. */
 		if ((p->alarm) && (p->alarm < ticks))
@@ -96,7 +93,7 @@ PUBLIC void yield(void)
 	}
 
 	/* Generate a pseudo-random integer. */
-	unsigned _rand = rand() % tickets;
+	unsigned _rand = rand() % t;
 
 	/* Choose a process to run next. */
 	next = IDLE;
@@ -107,11 +104,11 @@ PUBLIC void yield(void)
 			continue;
 
 		/* Process chosen after accumulating tickets. */
-		if (tickets > _rand)
+		if (t > _rand)
 			next = p;
 
 		/* Decrement counter to find a better suited process. */
-		tickets -= PROC_TICKETS(p);
+		t -= p->tickets;
 	}
 	
 	/* Switch to next process. */

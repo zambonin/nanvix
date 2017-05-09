@@ -68,6 +68,11 @@ PUBLIC pid_t next_pid = 0;
 PUBLIC unsigned nprocs = 0;
 
 /**
+ * @brief Total number of tickets used for scheduling.
+ */
+PUBLIC unsigned ttickts = 0;
+
+/**
  * @brief Initializes the process management system.
  */
 PUBLIC void pm_init(void)
@@ -118,11 +123,13 @@ PUBLIC void pm_init(void)
 	IDLE->counter = PROC_QUANTUM;
 	IDLE->priority = PRIO_USER;
 	IDLE->nice = NZERO;
+	IDLE->tickets = PROC_TICKETS(IDLE);
 	IDLE->alarm = 0;
 	IDLE->next = NULL;
 	IDLE->chain = NULL;
 	
 	nprocs++;
+	ttickts += IDLE->tickets;
 
 	/* Seed the RNG for future yielding. */
 	srand(CURRENT_TIME);

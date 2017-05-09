@@ -151,6 +151,7 @@ found:
 	proc->cktime = 0;
 	proc->priority = curr_proc->priority;
 	proc->nice = curr_proc->nice;
+	proc->tickets = PROC_TICKETS(curr_proc);
 	proc->alarm = 0;
 	proc->next = NULL;
 	proc->chain = NULL;
@@ -159,6 +160,7 @@ found:
 	curr_proc->nchildren++;
 	
 	nprocs++;
+	ttickts += proc->tickets;
 	
 	return (proc->pid);
 

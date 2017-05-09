@@ -119,6 +119,7 @@ PUBLIC void die(int status)
  */
 PUBLIC void bury(struct process *proc)
 {
+	ttickts -= proc->tickets;
 	dstrypgdir(proc);
 	proc->state = PROC_DEAD;
 	proc->father->nchildren--;

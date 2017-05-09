@@ -201,6 +201,7 @@
     	int counter;             /**< Remaining quantum.      */
     	int priority;            /**< Process priorities.     */
     	int nice;                /**< Nice for scheduling.    */
+	int tickets;             /**< Tickets for scheduling. */
     	unsigned alarm;          /**< Alarm.                  */
 		struct process *next;    /**< Next process in a list. */
 		struct process **chain;  /**< Sleeping chain.         */
@@ -277,7 +278,7 @@
 	 *          shall receive, in accordance to its priority and nice value.
 	 */
 	#define PROC_TICKETS(p) \
-		((8 + (4 - ((p)->nice / 5))) - (((p)->priority + 100) / 20))
+		((8 - (((p)->priority + 100) / 20)) + (8 - (((p)->nice + 1) / 5)))
 	
 	/* Forward definitions. */	
 	EXTERN void resume(struct process *);
@@ -290,6 +291,7 @@
 	EXTERN struct process *last_proc;
 	EXTERN pid_t next_pid;
 	EXTERN unsigned nprocs;
+	EXTERN unsigned ttickts;
 
 #endif /* _ASM_FILE */
 
