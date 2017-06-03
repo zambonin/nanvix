@@ -20,6 +20,7 @@
 #include <nanvix/const.h>
 #include <nanvix/hal.h>
 #include <nanvix/klib.h>
+#include <nanvix/mm.h>
 #include <nanvix/pm.h>
 
 /* Clock ticks since system initialization. */
@@ -34,6 +35,10 @@ PUBLIC unsigned startup_time = 0;
 PRIVATE void do_clock()
 {
 	ticks++;
+
+	/* 2^n - 1 clock ticks between page counter modifications. */
+	if (!(ticks & 63))
+		page_aging();
 	
 	if (KERNEL_RUNNING(curr_proc))
 	{

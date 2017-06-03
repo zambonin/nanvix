@@ -328,7 +328,7 @@ PRIVATE int allocf(void)
 	
 found:		
 
-	frames[i].age = ticks;
+	frames[i].age = 1 << (sizeof(unsigned) - 1);
 	frames[i].count = 1;
 	
 	return (i);
@@ -794,4 +794,27 @@ error1:
 	unlockreg(reg);
 error0:
 	return (-1);
+}
+
+/**
+ * @brief Implementation of the aging page replacement algorithm.
+ */
+PUBLIC void page_aging(void)
+{
+	int i;          /* Loop index.        */
+	struct pte *pg; /* Page table entry.  */
+
+	for (i = 0; i < NR_FRAMES; ++i)
+	{
+		if (frames[i].owner == curr_proc->pid)
+		{
+			/* Translate the page frame to a page table entry to get its R bit. */
+			pg = getpte(curr_proc, frames[i].addr & PAGE_MASK);
+
+			/* Shift counter to the left and change the most significant bit. */
+			frames[i].age = pg->accessed << (sizeof(unsigned) - 1)
+				| frames[i].age >> 1;
+			pg->accessed = 0;
+		}
+	}
 }
