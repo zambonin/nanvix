@@ -43,6 +43,11 @@
 	#define BLOCK_SIZE (1 << BLOCK_SIZE_LOG2)
 	
 	/**
+	 * @brief Number of blocks that will be read.
+	 */
+	#define BLOCK_AHEAD (1 << 2)
+
+	/**
 	 * @brief User for block number.
 	 */
 	typedef uint16_t block_t;

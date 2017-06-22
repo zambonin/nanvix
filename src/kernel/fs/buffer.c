@@ -305,6 +305,11 @@ PUBLIC void brelse(struct buffer *buf)
  */
 PUBLIC struct buffer *bread(dev_t dev, block_t num)
 {
+	return abread(dev, num, 0);
+}
+
+PUBLIC struct buffer *abread(dev_t dev, block_t num, uint8_t async)
+{
 	struct buffer *buf;
 	
 	buf = getblk(dev, num);
@@ -313,6 +318,7 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 
+	buf->flags = (buf->flags & (~(BUFFER_SYNC))) | (!async << 3);
 	bdev_readblk(buf);
 	
 	/* Update buffer flags. */

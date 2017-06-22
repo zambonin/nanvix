@@ -285,7 +285,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 	char *p;             /* Writing pointer.      */
 	size_t blkoff;       /* Block offset.         */
 	size_t chunk;        /* Data chunk size.      */
-	block_t blk;         /* Working block number. */
+	block_t blk, ablk;   /* Working block number. */
 	struct buffer *bbuf; /* Working block buffer. */
 		
 	p = buf;
@@ -324,6 +324,14 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 		off += chunk;
 		p += chunk;
 	} while (n > 0);
+
+	for (uint8_t b = 1; b < BLOCK_AHEAD; ++b)
+	{
+		ablk = block_map(i, off + (BLOCK_SIZE * b), 0);
+
+		if (ablk != BLOCK_NULL)
+			brelse(abread(i->dev, ablk, 1));
+	}
 
 out:
 	inode_touch(i);
